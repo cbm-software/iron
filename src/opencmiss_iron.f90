@@ -414,6 +414,9 @@ MODULE OpenCMISS_Iron
     & cmfe_CustomProfilingStart,cmfe_CustomProfilingStop,cmfe_CustomProfilingMemory,cmfe_CustomProfilingGetInfo, &
     & cmfe_CustomProfilingGetDuration,cmfe_CustomProfilingGetMemory,cmfe_CustomProfilingGetSizePerElement, &
     & cmfe_CustomProfilingGetNumberObjects, cmfe_CustomProfilingGetEnabled, cmfe_CustomProfilingReset
+  
+  PUBLIC cmfe_VisualizationDataGet
+  
   PUBLIC cmfe_PrintMesh, cmfe_PrintFields, cmfe_PrintDistributedMatrix, cmfe_PrintRegion, cmfe_PrintMeshelementstype, &
     & cmfe_PrintInterfacepointsconnectivitytype, cmfe_PrintQuadrature, cmfe_PrintSolverEquations, cmfe_PrintNodes, &
     & cmfe_PrintDataPoints, cmfe_PrintSolver, cmfe_PrintField, cmfe_PrintCoordinateSystem, cmfe_PrintDataProjection, &
@@ -62309,6 +62312,67 @@ CONTAINS
     CALL CustomProfilingReset()
   END SUBROUTINE cmfe_CustomProfilingReset
 
+  
+  !
+  !================================================================================================================================
+  !
+  SUBROUTINE cmfe_VisualizationDataGet(DependentFieldM, IndependentFieldM, GeometricFieldFE, IndependentFieldFE, Err)
+  
+    TYPE(cmfe_FieldType), INTENT(IN) :: DependentFieldM
+    TYPE(cmfe_FieldType), INTENT(IN) :: IndependentFieldM
+    TYPE(cmfe_FieldType), INTENT(IN) :: GeometricFieldFE
+    TYPE(cmfe_FieldType), INTENT(IN) :: IndependentFieldFE
+    REAL(DP), DIMENSION(:), ALLOCATABLE :: Vm, GeometryM3D, ActiveStressM, Geometry3D, ActiveStress3D
+    INTEGER(INTG) :: NumberOfValues1D, NumberOfValues3D, NumberOfActiveStressValues
+  
+    INTEGER(INTG), INTENT(OUT) :: err !<The error code.
+
+    ! The problem contains solving a 3D and a 1D problem. 1D fibre meshes are embedded in a 3D continuum mechanics formulation mesh.
+    ! For both you get the 3D coordinates for each node as well as some more quantities that may be interesting to visualize.
+    
+    ! -----------------------------------
+    ! 1D problem
+    ! Number of Nodes:
+    NumberOfValues1D = DependentFieldM%field%variables(1)%parameter_sets%parameter_sets(1)%ptr%parameters%cmiss%N
+        
+    ! Vm is the scalar membrane potential on each 1D node
+    Vm = DependentFieldM%field%variables(1)%parameter_sets%parameter_sets(1)%ptr%parameters%cmiss%data_dp
+    
+    ! 3D geometry of the 1D nodes (3 components): first all x values, then y, then z
+    ! GeometryM3D thus contains 3*NumberOfValues1D entries
+    GeometryM3D = DependentFieldM%field%variables(3)%parameter_sets%parameter_sets(1)%ptr%parameters%cmiss%data_dp
+
+    ! Active_Stress_M, normalised sarcomere-based active stress (scalar value, NumberOfValues1D entries)
+    ActiveStressM = IndependentFieldM%field%variables(1)%parameter_sets%parameter_sets(1)%ptr%parameters%cmiss%data_dp
+
+    
+    ! ------------------------------------
+    ! 3D problem
+    ! The number of values equals 3*number of dofs (for 3 spatial components). Each element contains 3*3*3=27 dofs (=gauss points),
+    ! Some dofs are shared between adjacent elements, e.g. two neighbouring elements share 3*3=9 dofs on their common face.
+    ! Therefore the total number of values is far less than 27*number of elements
+    NumberOfValues3D = GeometricFieldFE%field%variables(1)%parameter_sets%parameter_sets(1)%ptr%parameters%cmiss%N
+    
+    ! The values contain at first all x components then y, then z components. 
+    ! DOF ordering proceeds fastest in x direction, then y direction, then z direction.
+    Geometry3D = GeometricFieldFE%field%variables(1)%parameter_sets%parameter_sets(1)%ptr%parameters%cmiss%data_dp
+        
+    ! Active stress value in 3D elements, 27 consecutive values per element, ordering as usual (x,y,z).
+    NumberOfActiveStressValues = IndependentFieldFE%field%variables(1)%parameter_sets%parameter_sets(1)%ptr%parameters%cmiss%N
+    
+    ! E.g. ActiveStress3D(1:27) contains the values for the first element, first is lower left front, then next node in x-direction, etc.
+    ActiveStress3D = IndependentFieldFE%field%variables(1)%parameter_sets%parameter_sets(1)%ptr%parameters%cmiss%data_dp
+    
+    ! You can get the memory address of each field (c point) via GNU extension LOC()
+        
+    PRINT*, "cmfe_VisualizationDataGet in opencmiss_iron.f90:62368"
+    PRINT *, "Number of values 1D:", NumberOfValues1D, ", 3D:", NumberOfValues3D
+    PRINT *, Geometry3D
+    
+  END SUBROUTINE cmfe_VisualizationDataGet
+
+  
+  
 !!==================================================================================================================================
 !!
 !! TYPES
