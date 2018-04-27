@@ -2534,6 +2534,7 @@ END TYPE GENERATED_MESH_ELLIPSOID_TYPE
     TYPE(BACKWARD_EULER_DAE_SOLVER_TYPE), POINTER :: BACKWARD_EULER_SOLVER !<A pointer to the backward Euler solver information
     TYPE(IMPROVED_EULER_DAE_SOLVER_TYPE), POINTER :: IMPROVED_EULER_SOLVER !<A pointer to the improved Euler solver information
     INTEGER(INTG) :: SOLVER_LIBRARY !<The library type for the Euler differential equation solver \see SOLVER_ROUTINES_SolverLibraries,SOLVER_ROUTINES
+    INTEGER(INTG) :: Iterator ! to be removed if anyone sees this
   END TYPE EULER_DAE_SOLVER_TYPE
 
   !>Contains information for a Crank-Nicholson differential-algebraic equation solver
@@ -2560,6 +2561,7 @@ END TYPE GENERATED_MESH_ELLIPSOID_TYPE
     INTEGER(INTG) :: SOLVER_LIBRARY !<The library type for the BDF differential-algebraic equation solver \see SOLVER_ROUTINES_SolverLibraries,SOLVER_ROUTINES
     REAL(DP) :: RELATIVE_TOLERANCE !<The relative tolerance, the user expects to get from the SUNDIALS library
     REAL(DP) :: ABSOLUTE_TOLERANCE !<The absolute tolerance, the user expects to get from the SUNDIALS library
+    INTEGER(INTG) :: ITERATOR! to be removed if this falsly ends up somewhere not at Aarons
   END TYPE BDF_DAE_SOLVER_TYPE
 
   !>Contains information for a GL differential-algebraic equation solver
@@ -3163,12 +3165,13 @@ END TYPE GENERATED_MESH_ELLIPSOID_TYPE
     INTEGER(INTG) :: ITERATION_NUMBER
     INTEGER(INTG) :: GLOBAL_ITERATION_NUMBER
 ! sebk: is thei usefull?
-    INTEGER(INTG) :: OUTPUT_NUMBER
+    INTEGER(INTG) :: OUTPUT_NUMBER          !< The frequency of output, is only used if the specific problem implementation accesses it
     INTEGER(INTG) :: INPUT_NUMBER
     REAL(DP) :: CURRENT_TIME
     REAL(DP) :: START_TIME
     REAL(DP) :: STOP_TIME
     REAL(DP) :: TIME_INCREMENT
+    INTEGER(INTG) :: NUMBER_OF_ITERATIONS   !< The total number of iterations for this loop, if 0 it will be computed from time span and increment
   END TYPE CONTROL_LOOP_TIME_TYPE
 
   !>Contains information on a do-while control loop
