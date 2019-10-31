@@ -732,7 +732,8 @@ CONTAINS
             LOAD_INCREMENT_LOOP%ITERATION_NUMBER=0
             IF (LOAD_INCREMENT_LOOP%MAXIMUM_NUMBER_OF_ITERATIONS<1) THEN
               ! automatic stepping
-              CALL FlagError("Automatic load incrementing is not implemented yet.",ERR,ERROR,*999)
+              !CALL FlagError("Automatic load incrementing is not implemented yet.",ERR,ERROR,*999)
+              PRINT *, "Skip load increment loop, because MAXIMUM_NUMBER_OF_ITERATIONS<1"
             ELSE
               ! fixed number of steps
               DO WHILE(LOAD_INCREMENT_LOOP%ITERATION_NUMBER<LOAD_INCREMENT_LOOP%MAXIMUM_NUMBER_OF_ITERATIONS)
@@ -2493,7 +2494,6 @@ CONTAINS
           CASE(SOLVER_EQUATIONS_LINEAR)
             CALL Problem_SolverEquationsStaticLinearSolve(SOLVER_EQUATIONS,ERR,ERROR,*999)
           CASE(SOLVER_EQUATIONS_NONLINEAR)
-
             !CALL CPU_TIMER(USER_CPU, TIME1, ERR,ERROR,*999)
             TIME1(1) = MPI_WTIME()
 
@@ -3242,7 +3242,7 @@ CONTAINS
 #ifdef USE_CUSTOM_PROFILING
       CALL CustomProfilingStart("level 2: solver overhead")     ! at this point reached by 0D and 1D solvers and 3D nonlinear solver
 #endif
-          
+       
       CALL PROBLEM_SOLVER_PRE_SOLVE(SOLVER,ERR,ERROR,*999)
       
       !IF(ASSOCIATED(SOLVER)) THEN

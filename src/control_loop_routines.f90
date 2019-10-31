@@ -799,7 +799,7 @@ CONTAINS
         IF(CONTROL_LOOP%LOOP_TYPE==PROBLEM_CONTROL_LOAD_INCREMENT_LOOP_TYPE) THEN
           LOAD_INCREMENT_LOOP=>CONTROL_LOOP%LOAD_INCREMENT_LOOP
           IF(ASSOCIATED(LOAD_INCREMENT_LOOP)) THEN
-            IF(MAXIMUM_ITERATIONS<=0) THEN
+            IF(MAXIMUM_ITERATIONS<0) THEN
               LOCAL_ERROR="The specified maximum number of iterations of "// &
                 & TRIM(NUMBER_TO_VSTRING(MAXIMUM_ITERATIONS,"*",ERR,ERROR))// &
                 & " is invalid. The maximum number of iterations must be greater than zero."          
@@ -829,7 +829,7 @@ CONTAINS
         ELSEIF(CONTROL_LOOP%LOOP_TYPE==PROBLEM_CONTROL_LOAD_INCREMENT_LOOP_TYPE) THEN
           LOAD_INCREMENT_LOOP=>CONTROL_LOOP%LOAD_INCREMENT_LOOP
           IF(ASSOCIATED(LOAD_INCREMENT_LOOP)) THEN
-            IF(MAXIMUM_ITERATIONS<=0) THEN
+            IF(MAXIMUM_ITERATIONS<0) THEN
               LOCAL_ERROR="The specified maximum number of iterations of "// &
                 & TRIM(NUMBER_TO_VSTRING(MAXIMUM_ITERATIONS,"*",ERR,ERROR))// &
                 & " is invalid. The maximum number of iterations must be greater than zero."          
